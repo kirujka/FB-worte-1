@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c2410c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Aufgaben-Wörter">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Aufgaben-Wörter</title>
+<style>
+:root{
+  --bg:#faf8f5; --fg:#1c1917; --muted:#57534e; --faint:#8a847c;
+  --card:#fff; --line:#e7e2da;
+  --acc:#c2410c; --acc-bg:#fff1e8;
+  --blue:#2563eb; --blue-bg:#eef4ff;
+  --ok:#15803d; --ok-bg:#e9f7ee;
+  --red:#b91c1c; --red-bg:#fdecec;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#171412; --fg:#f4efe9; --muted:#b3aca3; --faint:#7f786f;
+  --card:#221e1b; --line:#38322c;
+  --acc:#fb923c; --acc-bg:#3a2214;
+  --blue:#7ba5ff; --blue-bg:#16233f;
+  --ok:#4ade80; --ok-bg:#12301d;
+  --red:#f87171; --red-bg:#3a1616;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 90px}
+h1{font-size:22px;margin:0 0 2px;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.ver{font:700 11px inherit;background:var(--acc-bg);color:var(--acc);padding:2px 7px;border-radius:5px;vertical-align:3px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.tab{flex:0 0 auto;background:none;border:1px solid var(--line);color:var(--muted);padding:8px 13px;border-radius:9px;font:600 14px inherit;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--acc-bg);border-color:var(--acc);color:var(--acc)}
+.hidden{display:none!important}
+.ctrl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.chip{background:var(--card);border:1px solid var(--line);color:var(--muted);padding:5px 11px;border-radius:16px;font:600 13px inherit;cursor:pointer}
+.chip.on{background:var(--acc-bg);border-color:var(--acc);color:var(--acc)}
+.lbl{font-size:12.5px;color:var(--faint)}
+input[type=search]{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font:15px inherit;margin-bottom:10px}
+.gh{font:700 13px inherit;color:var(--acc);margin:18px 0 8px;letter-spacing:.02em}
+.gh small{color:var(--faint);font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:9px}
+.card.schalt{border-left:4px solid var(--red)}
+.card.known{opacity:.55}
+.row{display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+.de{font-weight:700;font-size:16.5px}
+.ru{color:var(--muted);font-size:14.5px}
+.bsp{margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:8px;font-size:14.5px}
+.bsp .bru{color:var(--muted);font-size:13.5px;margin-top:2px}
+.hint{margin-top:8px;font-size:13.5px;color:var(--red);background:var(--red-bg);border-radius:8px;padding:6px 9px}
+.lat{font-size:12.5px;color:var(--blue);margin-left:6px;font-weight:500}
+.btns{display:flex;gap:4px;flex:0 0 auto}
+.ib{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:8px;width:34px;height:32px;font-size:15px;cursor:pointer;padding:0}
+.ib.on{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.hideru .ru, .hideru .bru{filter:blur(5px);cursor:pointer}
+.hideru .ru.show, .hideru .bru.show{filter:none}
+.drill{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:20px 16px;text-align:center}
+.dlab{font:700 11px inherit;letter-spacing:.09em;color:var(--faint);text-transform:uppercase;margin-bottom:10px}
+.dq{font-size:21px;font-weight:700;margin-bottom:6px}
+.dctx{font-size:15px;color:var(--muted);margin-bottom:12px}
+.dans{min-height:56px;margin:12px 0;font-size:16px}
+.dans .ru{font-size:16px}
+.btn{background:var(--card);border:1px solid var(--line);color:var(--fg);padding:10px 16px;border-radius:9px;font:600 14.5px inherit;cursor:pointer;margin:3px}
+.btn.ok{border-color:var(--ok);color:var(--ok)} .btn.no{border-color:var(--red);color:var(--red)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.score{font-size:13px;color:var(--faint);margin-top:10px}
+.lead{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:11px;padding:12px 14px;margin-bottom:12px;font-size:14.5px}
+.lead b{color:var(--acc)}
+.ex{padding:6px 0;border-top:1px dashed var(--line)}
+.ex:first-child{border-top:none}
+.fq{font-size:20px;font-weight:800;color:var(--acc)}
+@media(max-width:520px){ .wrap{padding:14px 12px 80px} .dq{font-size:19px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Aufgaben-Wörter <span class="ver" id="ver"></span></h1>
+<p class="sub">Слова из заданий Forumsbeitrag + вопросительные слова · к каждому слову русский перевод · 🔊 — прослушать</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="woerter">Слова заданий</button>
+  <button class="tab" data-t="drill">Дрилл слов</button>
+  <button class="tab" data-t="fragen">Вопросы</button>
+  <button class="tab" data-t="fdrill">Дрилл вопросов</button>
+</div>
+
+<!-- СЛОВА -->
+<section id="woerter">
+  <div class="lead"><b>Это слова для УЗНАВАНИЯ.</b> Их не надо уметь писать — надо понять, когда увидишь в задании. Красная полоса — слова-переключатели: одно такое слово меняет смысл темы. ✓ — «знаю», такие карточки бледнеют и уходят из дрилла.</div>
+  <input type="search" id="q" placeholder="Поиск по-немецки или по-русски">
+  <div class="ctrl" id="gfilter"></div>
+  <div class="ctrl"><span class="lbl">Показ:</span>
+    <button class="chip on" data-show="all">всё</button>
+    <button class="chip" data-show="unknown">только не знаю</button>
+    <button class="chip" data-hideru="1">скрыть перевод</button>
+  </div>
+  <div id="wlist"></div>
+</section>
+
+<!-- ДРИЛЛ СЛОВ -->
+<section id="drill" class="hidden">
+  <div class="ctrl" id="dfilter"></div>
+  <div class="drill">
+    <div class="dlab">Что это значит?</div>
+    <div class="dq" id="dq"></div>
+    <div class="dctx" id="dctx"></div>
+    <div class="dans" id="dans"></div>
+    <div id="dbtns"></div>
+    <div class="score" id="dscore"></div>
+  </div>
+</section>
+
+<!-- ВОПРОСЫ -->
+<section id="fragen" class="hidden">
+  <div class="lead"><b>Вопросительные слова.</b> По 2–4 примера из жизни в Германии — чтобы слово запомнилось через ситуацию. Синяя строка — как читать (ЗАГЛАВНЫЕ = ударение).</div>
+  <div class="ctrl" id="ffilter"></div>
+  <div id="flist"></div>
+</section>
+
+<!-- ДРИЛЛ ВОПРОСОВ -->
+<section id="fdrill" class="hidden">
+  <div class="drill">
+    <div class="dlab">Как спросить по-немецки?</div>
+    <div class="dq" id="fq"></div>
+    <div class="dans" id="fans"></div>
+    <div id="fbtns"></div>
+    <div class="score" id="fscore"></div>
+  </div>
+</section>
+</div>
+
+<script src="data.js?v=1.0"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+$('#ver').textContent='v'+DATA_VERSION;
+
+/* хранилище «знаю» — только в этом браузере */
+const KEY='aufgaben-woerter-known-v1';
+let known=new Set();
+try{ known=new Set(JSON.parse(localStorage.getItem(KEY)||'[]')); }catch(e){}
+function saveKnown(){ try{ localStorage.setItem(KEY, JSON.stringify([...known])); }catch(e){} }
+WOERTER.forEach((w,i)=>w.i=i);
+
+/* озвучка */
+let deVoice=null;
+function pickVoice(){ try{ const v=speechSynthesis.getVoices(); deVoice=v.find(x=>/^de(-|_)DE/i.test(x.lang))||v.find(x=>/^de/i.test(x.lang))||null; }catch(e){} }
+try{ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }catch(e){}
+function say(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/[→\/]/g,',').replace(/\(.*?\)/g,'')); u.lang='de-DE'; if(deVoice)u.voice=deVoice; u.rate=.9; speechSynthesis.speak(u);}catch(e){} }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-say]'); if(b){ say(b.dataset.say); } });
+
+/* вкладки */
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  ['woerter','drill','fragen','fdrill'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==b.dataset.t));
+  if(b.dataset.t==='drill') startDrill(); if(b.dataset.t==='fdrill') startF();
+  window.scrollTo(0,0);
+});
+
+/* ---------- СЛОВА ---------- */
+let gSel='alle', showMode='all', hideRu=false, query='';
+function chips(el, list, sel, onSel){
+  el.innerHTML=list.map(([k,n])=>`<button class="chip ${k===sel?'on':''}" data-k="${k}">${esc(n)}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(c=>c.onclick=()=>onSel(c.dataset.k));
+}
+const GL=[['alle','все — '+WOERTER.length],...GRUPPEN.map(g=>[g.id, g.ru.split(' — ')[0]+' — '+WOERTER.filter(w=>w.g===g.id).length])];
+function renderGF(){ chips($('#gfilter'),GL,gSel,k=>{gSel=k;renderGF();renderW();}); }
+document.querySelectorAll('#woerter [data-show]').forEach(c=>c.onclick=()=>{ showMode=c.dataset.show; document.querySelectorAll('#woerter [data-show]').forEach(x=>x.classList.toggle('on',x===c)); renderW(); });
+document.querySelector('#woerter [data-hideru]').onclick=e=>{ hideRu=!hideRu; e.target.classList.toggle('on',hideRu); $('#wlist').classList.toggle('hideru',hideRu); };
+$('#q').oninput=e=>{ query=e.target.value.trim().toLowerCase(); renderW(); };
+$('#wlist').addEventListener('click',e=>{
+  const r=e.target.closest('.ru,.bru'); if(r&&hideRu){ r.classList.toggle('show'); return; }
+  const k=e.target.closest('[data-known]'); if(k){ const i=+k.dataset.known; known.has(i)?known.delete(i):known.add(i); saveKnown(); renderW(); }
+});
+function wCard(w){
+  const isK=known.has(w.i);
+  return `<div class="card ${w.g==='schalt'?'schalt':''} ${isK?'known':''}">
+    <div class="row"><div><div class="de">${esc(w.de)}</div><div class="ru">${esc(w.ru)}</div></div>
+      <div class="btns"><button class="ib" data-say="${esc(w.de)}" title="прослушать">🔊</button><button class="ib ${isK?'on':''}" data-known="${w.i}" title="знаю">✓</button></div></div>
+    <div class="bsp"><div class="row"><div>${esc(w.bsp.de)}</div><button class="ib" data-say="${esc(w.bsp.de)}">🔊</button></div><div class="bru">${esc(w.bsp.ru)}</div></div>
+    ${w.hint?`<div class="hint">⚠ ${esc(w.hint)}</div>`:''}
+  </div>`;
+}
+function renderW(){
+  let L=WOERTER.filter(w=>(gSel==='alle'||w.g===gSel)&&(showMode==='all'||!known.has(w.i)));
+  if(query) L=L.filter(w=>(w.de+' '+w.ru+' '+w.bsp.de+' '+w.bsp.ru).toLowerCase().includes(query));
+  let h='';
+  GRUPPEN.forEach(g=>{ const part=L.filter(w=>w.g===g.id); if(!part.length) return;
+    h+=`<div class="gh">${esc(g.ru)} <small>· ${esc(g.de)} · ${part.length}</small></div>`+part.map(wCard).join(''); });
+  $('#wlist').innerHTML=h||'<p class="sub">Ничего не найдено.</p>';
+}
+
+/* ---------- ДРИЛЛ СЛОВ (узнавание: немецкий → русский) ---------- */
+let dSel='alle', dq=[], di=0, dok=0, dlater=[];
+function renderDF(){ chips($('#dfilter'),[['alle','все группы'],...GRUPPEN.map(g=>[g.id,g.ru.split(' — ')[0]])],dSel,k=>{dSel=k;renderDF();startDrill();}); }
+function startDrill(){ dq=shuffle(WOERTER.filter(w=>(dSel==='alle'||w.g===dSel)&&!known.has(w.i))); di=0; dok=0; dlater=[]; showD(); }
+function showD(){
+  if(di>=dq.length){
+    if(dlater.length){ dq=shuffle(dlater); dlater=[]; di=0; }
+    else { $('#dq').textContent= dq.length? 'Круг пройден 👍':'Все слова этой группы отмечены «знаю»'; $('#dctx').textContent=''; $('#dans').innerHTML=''; $('#dbtns').innerHTML=`<button class="btn pri" id="drs">Начать заново</button>`; $('#drs').onclick=startDrill; $('#dscore').textContent=''; return; }
+  }
+  const w=dq[di];
+  $('#dq').innerHTML=`${esc(w.de)} <button class="ib" data-say="${esc(w.de)}">🔊</button>`;
+  $('#dctx').textContent='«'+w.bsp.de+'»';
+  $('#dans').innerHTML='';
+  $('#dbtns').innerHTML=`<button class="btn pri" id="dshow">Показать перевод</button>`;
+  $('#dshow').onclick=()=>{
+    $('#dans').innerHTML=`<div class="ru"><b>${esc(w.ru)}</b></div><div class="ru" style="font-size:14px;margin-top:4px">${esc(w.bsp.ru)}</div>${w.hint?`<div class="hint">⚠ ${esc(w.hint)}</div>`:''}`;
+    $('#dbtns').innerHTML=`<button class="btn ok" id="dk">✓ Знал</button><button class="btn no" id="dn">Ещё раз</button>`;
+    $('#dk').onclick=()=>{ dok++; known.add(w.i); saveKnown(); di++; showD(); };
+    $('#dn').onclick=()=>{ dlater.push(w); di++; showD(); };
+  };
+  $('#dscore').textContent=`${di+1} / ${dq.length} · знал: ${dok} · на повтор: ${dlater.length}`;
+}
+
+/* ---------- ВОПРОСЫ ---------- */
+let fSel='alle';
+function renderFF(){ chips($('#ffilter'),[['alle','все — '+FRAGEN.length],...FRAGE_GRUPPEN.map(g=>[g.id,g.ru])],fSel,k=>{fSel=k;renderFF();renderF();}); }
+function renderF(){
+  let h='';
+  FRAGE_GRUPPEN.forEach(g=>{ if(fSel!=='alle'&&fSel!==g.id) return; const part=FRAGEN.filter(f=>f.g===g.id); if(!part.length) return;
+    h+=`<div class="gh">${esc(g.ru)}</div>`+part.map(f=>`<div class="card">
+      <div class="row"><div><span class="fq">${esc(f.de)}</span>${f.lat?`<span class="lat">[${esc(f.lat)}]</span>`:''}<div class="ru">${esc(f.ru)}</div></div>
+      <button class="ib" data-say="${esc(f.de)}">🔊</button></div>
+      <div class="bsp">${f.bsp.map(b=>`<div class="ex"><div class="row"><div>${esc(b.de)}</div><button class="ib" data-say="${esc(b.de)}">🔊</button></div><div class="bru">${esc(b.ru)}</div></div>`).join('')}</div>
+      ${f.hint?`<div class="hint">⚠ ${esc(f.hint)}</div>`:''}
+    </div>`).join(''); });
+  $('#flist').innerHTML=h;
+}
+
+/* ---------- ДРИЛЛ ВОПРОСОВ (русский → немецкий) ---------- */
+let fq=[], fi=0, fok=0;
+function startF(){ fq=shuffle(FRAGEN.flatMap(f=>f.bsp.map(b=>({...b,w:f.de})))); fi=0; fok=0; showF(); }
+function showF(){
+  if(fi>=fq.length){ $('#fq').textContent='Круг пройден 👍'; $('#fans').innerHTML=''; $('#fbtns').innerHTML=`<button class="btn pri" id="frs">Ещё круг</button>`; $('#frs').onclick=startF; $('#fscore').textContent=`знал: ${fok} из ${fq.length}`; return; }
+  const c=fq[fi];
+  $('#fq').textContent=c.ru; $('#fans').innerHTML='';
+  $('#fbtns').innerHTML=`<button class="btn pri" id="fshow">Показать</button>`;
+  $('#fshow').onclick=()=>{ $('#fans').innerHTML=`<div class="de">${esc(c.de)} <button class="ib" data-say="${esc(c.de)}">🔊</button></div><div class="ru" style="margin-top:4px">слово: <b>${esc(c.w)}</b></div>`;
+    say(c.de);
+    $('#fbtns').innerHTML=`<button class="btn ok" id="fk">✓ Знал</button><button class="btn no" id="fn">Не вспомнил</button>`;
+    $('#fk').onclick=()=>{ fok++; fi++; showF(); };
+    $('#fn').onclick=()=>{ fq.push(c); fi++; showF(); }; };
+  $('#fscore').textContent=`${fi+1} / ${fq.length} · знал: ${fok}`;
+}
+
+renderGF(); renderW(); renderDF(); renderFF(); renderF();
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
